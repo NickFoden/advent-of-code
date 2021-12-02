@@ -29,6 +29,31 @@ func calculateDistance(data []string) int64 {
 	return horizontal * depth
 }
 
+func calculateDistanceWithAIm(data []string) int64 {
+	aim := int64(0)
+	horizontal := int64(0)
+	depth := int64(0)
+	for _, v := range data {
+
+		line := strings.Fields(v)
+		direction := line[0]
+		val, _ := strconv.ParseInt(line[1], 10, 64)
+
+		switch direction {
+		case "forward":
+			horizontal = horizontal + val
+			if aim != 0 {
+				depth = depth + (aim * val)
+			}
+		case "down":
+			aim = aim + val
+		case "up":
+			aim = aim - val
+		}
+	}
+	return horizontal * depth
+}
+
 func TestDay2(t *testing.T) {
 	// Test the first example
 	sampleInput := []string{
@@ -48,6 +73,11 @@ func TestDay2(t *testing.T) {
 
 	// PART 1
 	if diff := cmp.Diff(calculateDistance(b), int64(1561344)); diff != "" {
+		t.Errorf("Value mismatch (-want +got):\n%s", diff)
+	}
+
+	// PART 2
+	if diff := cmp.Diff(calculateDistanceWithAIm(b), int64(1848454425)); diff != "" {
 		t.Errorf("Value mismatch (-want +got):\n%s", diff)
 	}
 }
