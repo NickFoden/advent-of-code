@@ -118,7 +118,7 @@ func TestDay5(t *testing.T) {
 	sampleInput, _ := readStringLines("./inputs/5a.txt")
 	solveInput, _ := readStringLines("./inputs/5.txt")
 
-	// PART 1a - sample input is MESSED UP - no 3rd game board ?!
+	// PART 1a
 	if diff := cmp.Diff(int64(5), ventCheck(sampleInput)); diff != "" {
 		t.Errorf("Value mismatch (-want +got):\n%s", diff)
 	}
