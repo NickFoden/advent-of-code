@@ -1,7 +1,6 @@
 package adventOfCode
 
 import (
-	"fmt"
 	"strconv"
 	"testing"
 
@@ -114,7 +113,7 @@ func lifeSupport(data []string) int64 {
 	oxygenGenerator, _ := strconv.ParseInt(oxygenBinary, 2, 64)
 	co2Scrubber, _ := strconv.ParseInt(co2ScrubberBinary, 2, 64)
 
-	fmt.Printf("oxygenGenerator=%v, co2Scrubber=%v \n", oxygenGenerator, co2Scrubber)
+	// fmt.Printf("oxygenGenerator=%v, co2Scrubber=%v \n", oxygenGenerator, co2Scrubber)
 
 	return oxygenGenerator * co2Scrubber
 }
