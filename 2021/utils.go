@@ -36,3 +36,23 @@ func readStringLines(path string) ([]string, error) {
 	}
 	return lines, scanner.Err()
 }
+
+func containsInt64(n []int64, val int64) bool {
+	for _, v := range n {
+		if v == val {
+			return true
+		}
+	}
+
+	return false
+}
+
+func containsString(s []string, str string) bool {
+	for _, v := range s {
+		if v == str {
+			return true
+		}
+	}
+
+	return false
+}
