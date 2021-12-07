@@ -56,8 +56,31 @@ func simulateLanternfish(data []string, days int64) int64 {
 
 	}
 
-	for _, char := range activeData {
-		result++
+	result = int64(len(activeData))
+
+	return result
+}
+
+func simulateLanternfishBetter(data []string, days int64) int64 {
+	result := int64(0)
+	currentFish := make([]int64, 9)
+
+	for _, num := range strings.Split(data[0], ",") {
+		val, _ := strconv.ParseInt(num, 10, 64)
+		currentFish[val] = currentFish[val] + 1
+	}
+
+	for i := int64(0); i < days; i++ {
+		newFish := currentFish[0]
+		for i := 0; i < len(currentFish)-1; i++ {
+			currentFish[i] = currentFish[i+1]
+		}
+		currentFish[8] = newFish
+		currentFish[6] = currentFish[6] + newFish
+	}
+
+	for _, n := range currentFish {
+		result = result + n
 	}
 
 	return result
@@ -73,16 +96,14 @@ func TestDay6(t *testing.T) {
 	}
 
 	// PART 1
-	// if diff := cmp.Diff(int64(390011), simulateLanternfish(solveInput, 80)); diff != "" {
-	// 	t.Errorf("Value mismatch (-want +got):\n%s", diff)
-	// }
+	if diff := cmp.Diff(int64(390011), simulateLanternfish(solveInput, 80)); diff != "" {
+		t.Errorf("Value mismatch (-want +got):\n%s", diff)
+	}
 
 	// PART 2a
 
 	// PART 2
-	if diff := cmp.Diff(int64(390011), simulateLanternfish(solveInput, 256)); diff != "" {
-
-		// 1248036 too low
+	if diff := cmp.Diff(int64(1746710169834), simulateLanternfishBetter(solveInput, 256)); diff != "" {
 		t.Errorf("Value mismatch (-want +got):\n%s", diff)
 	}
 
