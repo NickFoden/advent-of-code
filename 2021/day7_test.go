@@ -1,7 +1,6 @@
 package adventOfCode
 
 import (
-	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -64,7 +63,7 @@ func crabFuel(data []string) int64 {
 		val := fuelUsage(median, crab)
 		result += val
 	}
-	fmt.Printf("median: %v \n", median)
+	// fmt.Printf("median: %v \n", median)
 
 	return result
 }
@@ -83,7 +82,7 @@ func crabFuelHigherCost(data []string) int64 {
 
 	// determine mean value
 	mean := total / int64(len(crabs))
-	fmt.Printf("crabs len: %v \n", len(crabs))
+	// fmt.Printf("crabs len: %v \n", len(crabs))
 	// fmt.Printf("mean: %v \n", mean)
 
 	for _, crab := range crabs {
