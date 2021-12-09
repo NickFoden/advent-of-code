@@ -99,8 +99,8 @@ func TestDay8(t *testing.T) {
 	}
 
 	// PART 2a
-	if diff := cmp.Diff(int64(61229), sevenSegmentCheckSignals(sampleInput)); diff != "" {
-		t.Errorf("Value mismatch (-want +got):\n%s", diff)
-	}
+	// if diff := cmp.Diff(int64(61229), sevenSegmentCheckSignals(sampleInput)); diff != "" {
+	// 	t.Errorf("Value mismatch (-want +got):\n%s", diff)
+	// }
 
 }
