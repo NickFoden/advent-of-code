@@ -8,7 +8,6 @@ import (
 )
 
 func checkOpenIndex(options []string, val string) (int64, bool) {
-
 	for index, next := range options {
 		if val == next {
 			return int64(index), true
@@ -18,7 +17,6 @@ func checkOpenIndex(options []string, val string) (int64, bool) {
 }
 
 func checkCloseIndex(options []string, val string) (int64, bool) {
-
 	for index, next := range options {
 		if val == next {
 			return int64(index), true
