@@ -70,13 +70,8 @@ func syntaxScoring(data []string) int64 {
 			if foundOpen {
 				memory = append(memory, indexOfOpen)
 			} else if len(memory) > 0 {
-
-				if foundClosed {
-					if indexOfClosed == lastMemoryIndex {
-						memory = memory[:len(memory)-1]
-					} else {
-						charFail = char
-					}
+				if foundClosed && indexOfClosed == lastMemoryIndex {
+					memory = memory[:len(memory)-1]
 				} else {
 					charFail = char
 				}
