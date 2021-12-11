@@ -1,7 +1,7 @@
 package adventOfCode
 
 import (
-	"fmt"
+	"sort"
 	"strings"
 	"testing"
 
@@ -94,6 +94,33 @@ func reverseTheRow(row []int64) []int64 {
 	return row
 }
 
+func calculateScoresChooseMiddleScore(completedRows [][]string) int64 {
+	rubric := map[string]int64{")": 1, "]": 2, "}": 3, ">": 4}
+
+	var scores []int64
+
+	for _, row := range completedRows {
+
+		rowTotalScore := int64(0)
+
+		for _, char := range row {
+			newTotal := rowTotalScore * 5
+			newTotal += rubric[char]
+			rowTotalScore = newTotal
+		}
+
+		scores = append(scores, rowTotalScore)
+	}
+
+	// order scores low to high
+	sort.Slice(scores, func(i, j int) bool { return scores[i] < scores[j] })
+
+	// choose middle score
+	middle := scores[len(scores)/2]
+
+	return middle
+}
+
 func scoringIncompletes(data []string) int64 {
 	result := int64(0)
 
@@ -112,12 +139,6 @@ func scoringIncompletes(data []string) int64 {
 
 		for charIndex, char := range vals {
 			if len(charFail) > 0 {
-				break
-			}
-
-			if charIndex == len(vals)-1 {
-				incompleteRows = append(incompleteRows, int64(rowIndex))
-				unfinishedMemory = append(unfinishedMemory, memory)
 				break
 			}
 
@@ -140,14 +161,18 @@ func scoringIncompletes(data []string) int64 {
 			} else {
 				break
 			}
+			if charIndex == len(vals)-1 {
+				incompleteRows = append(incompleteRows, int64(rowIndex))
+				unfinishedMemory = append(unfinishedMemory, memory)
+				break
+			}
 		}
+
 		if len(charFail) > 0 {
 			charFails = append(charFails, charFail)
 		}
-	}
 
-	// result = scoreCharFails(charFails)
-	fmt.Printf("Unfinished Memory: %v", unfinishedMemory[0])
+	}
 
 	var completedRows [][]string
 
@@ -160,7 +185,9 @@ func scoringIncompletes(data []string) int64 {
 
 		completedRows = append(completedRows, rowFinish)
 	}
-	fmt.Printf("Completed Rows: %v \n", completedRows)
+
+	result = calculateScoresChooseMiddleScore(completedRows)
+
 	return result
 }
 
@@ -180,6 +207,10 @@ func TestDay10(t *testing.T) {
 
 	// PART 2a
 	if diff := cmp.Diff(int64(288957), scoringIncompletes(sampleInput)); diff != "" {
+		t.Errorf("Value mismatch (-want +got):\n%s", diff)
+	}
+
+	if diff := cmp.Diff(int64(1685293086), scoringIncompletes(solveInput)); diff != "" {
 		t.Errorf("Value mismatch (-want +got):\n%s", diff)
 	}
 
