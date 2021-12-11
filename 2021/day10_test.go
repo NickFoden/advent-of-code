@@ -74,8 +74,6 @@ func syntaxScoring(data []string) int64 {
 				} else {
 					charFail = char
 				}
-			} else {
-				break
 			}
 		}
 		if len(charFail) > 0 {
@@ -158,9 +156,8 @@ func scoringIncompletes(data []string) int64 {
 				} else {
 					charFail = char
 				}
-			} else {
-				break
 			}
+
 			if charIndex == len(vals)-1 {
 				incompleteRows = append(incompleteRows, int64(rowIndex))
 				unfinishedMemory = append(unfinishedMemory, memory)
