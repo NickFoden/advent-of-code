@@ -8,134 +8,224 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+type octopus struct {
+	val     int64
+	flashed bool
+}
+
+func resetFlashers(matrix [][]octopus) [][]octopus {
+	for i := int64(0); i < 10; i++ {
+		for j := int64(0); j < 10; j++ {
+			currentOctopus := matrix[i][j]
+			if currentOctopus.flashed == true {
+				matrix[i][j].val = 0
+			}
+			matrix[i][j].flashed = false
+		}
+	}
+
+	return matrix
+}
+
+func updateMatrixByFlasher(matrix [][]octopus, flashCount int64) ([][]octopus, int64) {
+
+	runningFlashCount := flashCount
+
+	for i := int64(0); i < 10; i++ {
+		for j := int64(0); j < 10; j++ {
+			currentOctopus := matrix[i][j]
+
+			// update to be flashed and bump neighbors by 1
+			if currentOctopus.val > 9 && currentOctopus.flashed == false {
+				// start over if a previously checked coordinate is bumped to above 9
+				restart := false
+				//  above
+				if i-1 >= 0 {
+					if matrix[i-1][j].val+1 > 9 && matrix[i-1][j].flashed == false {
+						restart = true
+					}
+					matrix[i-1][j].val = matrix[i-1][j].val + 1
+				}
+				// above right
+				if i-1 >= 0 && j+1 < 10 {
+					if matrix[i-1][j+1].val+1 > 9 && matrix[i-1][j+1].flashed == false {
+						restart = true
+					}
+					matrix[i-1][j+1].val = matrix[i-1][j+1].val + 1
+				}
+				//  right
+				if j+1 < 10 {
+					matrix[i][j+1].val = matrix[i][j+1].val + 1
+				}
+				// below right
+				if i+1 < 10 && j+1 < 10 {
+					matrix[i+1][j+1].val = matrix[i+1][j+1].val + 1
+				}
+				// below
+				if i+1 < 10 {
+					matrix[i+1][j].val = matrix[i+1][j].val + 1
+				}
+				// below left
+				if i+1 < 10 && j-1 >= 0 {
+					matrix[i+1][j-1].val = matrix[i+1][j-1].val + 1
+				}
+				// left
+				if j-1 >= 0 {
+					if matrix[i][j-1].val+1 > 9 && matrix[i][j-1].flashed == false {
+						restart = true
+					}
+					matrix[i][j-1].val = matrix[i][j-1].val + 1
+				}
+				// above left
+				if i-1 >= 0 && j-1 >= 0 {
+					if matrix[i-1][j-1].val+1 > 9 && matrix[i-1][j-1].flashed == false {
+						restart = true
+					}
+					matrix[i-1][j-1].val = matrix[i-1][j-1].val + 1
+				}
+				// update to be flashed
+				matrix[i][j].flashed = true
+				runningFlashCount++
+
+				if restart {
+					matrix, runningFlashCount = updateMatrixByFlasher(matrix, runningFlashCount)
+					break
+				}
+			}
+
+		}
+	}
+
+	return matrix, runningFlashCount
+}
+
+func checkAllFlashMatrix(matrix [][]octopus) bool {
+	allFlash := true
+
+	for i := int64(0); i < 10; i++ {
+		for j := int64(0); j < 10; j++ {
+			currentOctopus := matrix[i][j]
+			if currentOctopus.flashed == false {
+				allFlash = false
+			}
+		}
+	}
+	return allFlash
+}
+
 func dumboOctopus(data []string, steps int64) int64 {
 	flashes := int64(0)
 	currentSteps := steps
-
-	var matrix [][]int64
+	var matrix [][]octopus
 
 	for _, row := range data {
 		vals := strings.Split(row, "")
 
-		var newRow []int64
+		var newRow []octopus
 
 		for _, char := range vals {
 			num, _ := strconv.ParseInt(char, 10, 64)
-			newRow = append(newRow, num)
+			var newOctopus octopus
+			newOctopus.flashed = false
+			newOctopus.val = num
+			newRow = append(newRow, newOctopus)
 		}
 		matrix = append(matrix, newRow)
 	}
 
-	iBound := int64(len(matrix))
-	jBound := int64(len(matrix[0]))
-
 	for currentSteps > 0 {
 
-		flashChecks := make(map[int64]int64)
-
-		for i := int64(0); i < iBound; i++ {
-			for j := int64(0); j < jBound; j++ {
-				val := matrix[i][j]
-				if val == 9 {
-					matrix[i][j] = 0
-					flashChecks[i] = j
-
-					//check above
-					if i-1 > 0 {
-						if matrix[i-1][j] == 9 {
-							flashChecks[i-1] = j
-							matrix[i-1][j] = 0
-						} else {
-							matrix[i-1][j] = matrix[i-1][j] + 1
-						}
-					}
-
-					//check above right
-					if i-1 > 0 && j+1 < jBound {
-						if matrix[i-1][j+1] == 9 {
-							flashChecks[i-1] = j + 1
-							matrix[i-1][j+1] = 0
-						} else {
-							matrix[i-1][j+1] = matrix[i-1][j+1] + 1
-						}
-					}
-
-					//check above left
-					if i-1 > 0 && j-1 > 0 {
-						if matrix[i-1][j-1] == 9 {
-							flashChecks[i-1] = j - 1
-							matrix[i-1][j-1] = 0
-						} else {
-							matrix[i-1][j-1] = matrix[i-1][j-1] + 1
-						}
-					}
-					// check below
-					if i+1 < iBound {
-						if matrix[i+1][j] == 9 {
-							flashChecks[i+1] = j
-							matrix[i+1][j] = 0
-						} else {
-							matrix[i+1][j] = matrix[i+1][j] + 1
-						}
-					}
-
-					// check right
-					if j+1 < jBound {
-						if matrix[i][j+1] == 9 {
-							flashChecks[i] = j + 1
-							matrix[i][j+1] = 0
-						} else {
-							matrix[i][j+1] = matrix[i][j+1] + 1
-						}
-					}
-
-					// check left
-					if j-1 > 0 {
-						if matrix[i][j-1] == 9 {
-							flashChecks[i] = j - 1
-							matrix[i][j-1] = 0
-						} else {
-							matrix[i][j-1] = matrix[i][j-1] + 1
-						}
-					}
-
-					//check below left
-					if i+1 < iBound && j-1 > 0 {
-						if matrix[i+1][j-1] == 9 {
-							flashChecks[i+1] = j - 1
-							matrix[i+1][j-1] = 0
-						} else {
-							matrix[i+1][j-1] = matrix[i+1][j-1] + 1
-						}
-					}
-
-					//check below right
-					if i+1 < iBound && j+1 < jBound {
-						if matrix[i+1][j+1] == 9 {
-							flashChecks[i+1] = j + 1
-							matrix[i+1][j+1] = 0
-						} else {
-							matrix[i+1][j+1] = matrix[i+1][j+1] + 1
-						}
-					}
-				} else {
-					matrix[i][j] = val + 1
+		hasFlasher := false
+		// First increase each octopus level by 1
+		for i := int64(0); i < 10; i++ {
+			for j := int64(0); j < 10; j++ {
+				if matrix[i][j].val == 9 {
+					hasFlasher = true
 				}
+				matrix[i][j].val = matrix[i][j].val + 1
 			}
 		}
-		flashes += int64(len(flashChecks))
-		currentSteps = currentSteps - 1
+
+		if hasFlasher {
+			matrix, flashes = updateMatrixByFlasher(matrix, flashes)
+		}
+
+		matrix = resetFlashers(matrix)
+
+		currentSteps--
 	}
 
 	return flashes
 }
 
+func dumboOctopusAllFlash(data []string) int64 {
+	flashes := int64(0)
+	allFlashed := false
+	var matrix [][]octopus
+	result := int64(0)
+
+	for _, row := range data {
+		vals := strings.Split(row, "")
+
+		var newRow []octopus
+
+		for _, char := range vals {
+			num, _ := strconv.ParseInt(char, 10, 64)
+			var newOctopus octopus
+			newOctopus.flashed = false
+			newOctopus.val = num
+			newRow = append(newRow, newOctopus)
+		}
+		matrix = append(matrix, newRow)
+	}
+
+	for !allFlashed {
+
+		hasFlasher := false
+		// First increase each octopus level by 1
+		for i := int64(0); i < 10; i++ {
+			for j := int64(0); j < 10; j++ {
+				if matrix[i][j].val == 9 {
+					hasFlasher = true
+				}
+				matrix[i][j].val = matrix[i][j].val + 1
+			}
+		}
+
+		if hasFlasher {
+			matrix, flashes = updateMatrixByFlasher(matrix, flashes)
+		}
+
+		didAllFlash := checkAllFlashMatrix(matrix)
+
+		if didAllFlash {
+			allFlashed = true
+		}
+
+		matrix = resetFlashers(matrix)
+
+		result++
+
+	}
+
+	return result
+}
 func TestDay11(t *testing.T) {
 	sampleInput, _ := readStringLines("./inputs/11a.txt")
-	// solveInput, _ := readLines("./inputs/11.txt")
+	solveInput, _ := readStringLines("./inputs/11.txt")
 
 	// PART 1a
 	if diff := cmp.Diff(int64(1656), dumboOctopus(sampleInput, int64(100))); diff != "" {
+		t.Errorf("Value mismatch (-want +got):\n%s", diff)
+	}
+
+	// PART 1
+	if diff := cmp.Diff(int64(1694), dumboOctopus(solveInput, int64(100))); diff != "" {
+		t.Errorf("Value mismatch (-want +got):\n%s", diff)
+	}
+
+	// PART 2
+	if diff := cmp.Diff(int64(346), dumboOctopusAllFlash(solveInput)); diff != "" {
 		t.Errorf("Value mismatch (-want +got):\n%s", diff)
 	}
 
