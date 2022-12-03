@@ -56,3 +56,22 @@ func containsString(s []string, str string) bool {
 
 	return false
 }
+
+func containsLetter(s string, str string) bool {
+	for _, v := range s {
+		if string(v) == str {
+			return true
+		}
+	}
+
+	return false
+}
+
+func Contains[T comparable](s []T, e T) bool {
+	for _, v := range s {
+		if v == e {
+			return true
+		}
+	}
+	return false
+}
