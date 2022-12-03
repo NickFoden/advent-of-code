@@ -11,6 +11,10 @@ const ROCK = "Rock"
 const PAPER = "Paper"
 const SCISSORS = "Scissors"
 
+const WIN = "Win"
+const DRAW = "Draw"
+const LOST = "Lose"
+
 func calculateMove(g string) string {
 	switch g {
 	case "A", "X":
@@ -76,6 +80,63 @@ func rockPapersStrategy(data []string) int64 {
 	return score
 }
 
+func determineOutcome(o string) string {
+	switch o {
+	case "X":
+		return LOST
+	case "Y":
+		return DRAW
+	case "Z":
+		return WIN
+	}
+	return ""
+}
+
+func determinePlayer2(p1 string, out string) string {
+
+	if out == DRAW {
+		return p1
+	}
+
+	if p1 == ROCK {
+		if out == WIN {
+			return PAPER
+		} else {
+			return SCISSORS
+		}
+	}
+	if p1 == PAPER {
+		if out == WIN {
+			return SCISSORS
+		} else {
+			return ROCK
+		}
+	}
+	if p1 == SCISSORS {
+		if out == WIN {
+			return ROCK
+		} else {
+			return PAPER
+		}
+	}
+	return ""
+}
+
+func rockPapersRequiredStrategy(data []string) int64 {
+	score := int64(0)
+
+	for _, game := range data {
+		match := strings.Split(game, " ")
+		player1 := calculateMove(match[0])
+		outcome := determineOutcome(match[1])
+		player2 := determinePlayer2(player1, outcome)
+		gameScore := calculateMatch(player1, player2)
+		score = score + gameScore
+	}
+
+	return score
+}
+
 func TestDay2(t *testing.T) {
 
 	sampleInput, _ := readStringLines("./inputs/2sample.txt")
@@ -87,20 +148,17 @@ func TestDay2(t *testing.T) {
 		t.Errorf("Value mismatch (-want +got):\n%s", diff)
 	}
 
-	if diff := cmp.Diff(rockPapersStrategy(puzzleInput), int64(15)); diff != "" {
+	if diff := cmp.Diff(rockPapersStrategy(puzzleInput), int64(10816)); diff != "" {
 		t.Errorf("Value mismatch (-want +got):\n%s", diff)
 	}
-	// if diff := cmp.Diff(mostCalories(puzzleInput), int64(70116)); diff != "" {
-	// 	t.Errorf("Value mismatch (-want +got):\n%s", diff)
-	// }
 
 	// Part 2
 
-	// if diff := cmp.Diff(topThreeMostCalories(sampleInput), int64(45000)); diff != "" {
-	// 	t.Errorf("Value mismatch (-want +got):\n%s", diff)
-	// }
+	if diff := cmp.Diff(rockPapersRequiredStrategy(sampleInput), int64(12)); diff != "" {
+		t.Errorf("Value mismatch (-want +got):\n%s", diff)
+	}
 
-	// if diff := cmp.Diff(topThreeMostCalories(puzzleInput), int64(206582)); diff != "" {
-	// 	t.Errorf("Value mismatch (-want +got):\n%s", diff)
-	// }
+	if diff := cmp.Diff(rockPapersRequiredStrategy(puzzleInput), int64(11657)); diff != "" {
+		t.Errorf("Value mismatch (-want +got):\n%s", diff)
+	}
 }
